@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Portfolio Impact Analyzer</h1>
+      <button id="settingsBtn" class="settings-btn">⚙️</button>
+    </div>
+
+    <div id="idleState" class="idle-state">
+      <div class="idle-content">
+        <p>Ready to analyze how this page affects your portfolio</p>
+        <button id="analyzeBtn" class="analyze-btn">📊 Analyze Page</button>
+      </div>
+    </div>
+
+    <div id="loadingState" class="loading-state" style="display: none;">
+      <div class="spinner"></div>
+      <p id="loadingMessage">Analyzing impact on your portfolio...</p>
+    </div>
+
+    <div id="errorState" class="error-state" style="display: none;">
+      <p id="errorMessage"></p>
+      <button id="retryBtn" class="retry-btn">Try Again</button>
+    </div>
+
+    <div id="setupState" class="setup-state" style="display: none;">
+      <p>Please configure your settings first</p>
+      <button id="setupBtn" class="setup-btn">Open Settings</button>
+    </div>
+
+    <div id="resultsState" class="results-state" style="display: none;">
+      <div class="analysis-section">
+        <h3>📊 Impact Analysis</h3>
+        <div id="analysisContent"></div>
+      </div>
+
+      <div class="portfolio-section">
+        <h3>💼 Affected Holdings</h3>
+        <div id="portfolioContent"></div>
+      </div>
+
+      <div class="summary-section">
+        <h3>📈 Risk Assessment</h3>
+        <div id="summaryContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
