@@ -12,6 +12,8 @@ A Chrome extension that analyzes how current web page content affects your Yahoo
 - ⚙️ Manual analysis control - analyze when you want
 - 🎯 Manual holdings configuration as backup
 - 🎨 Clean, professional UI with improved user experience
+- 📌 **Side Panel Support** - Stays open while you browse and switch tabs
+- 🔄 **Dynamic Model Loading** - Automatically fetches latest available Gemini models
 
 ## Installation
 
@@ -38,18 +40,18 @@ Download or clone this repository to your local machine.
 5. The extension should now appear in your Chrome toolbar
 
 ### 5. Configure Settings
-1. Click the extension icon in your Chrome toolbar
-2. Click the settings button (⚙️) in the popup
+1. Click the extension icon in your Chrome toolbar to open the side panel
+2. Click the settings button (⚙️) in the side panel
 3. Enter your Yahoo Finance portfolio URL
 4. Enter your Gemini API key
-5. Select your preferred Gemini model:
-   - **Gemini 1.5 Flash** (Recommended) - Best balance of quality and speed
-   - **Gemini 1.5 Pro** - High quality, more detailed analysis
-   - **Gemini 1.5 Flash-8B** - Fastest option
-   - **Gemini 2.0 Flash Experimental** - Latest experimental features
+5. Select your preferred Gemini model (automatically loaded from Gemini API):
+   - Models are fetched dynamically and cached for 24 hours
+   - Default recommended models include Gemini 1.5 Flash, Gemini 2.5 Flash, etc.
+   - New models appear automatically as Google releases them
 6. **Optional**: Enable "Thinking Mode" for more detailed analysis
    - Shows the AI's reasoning process
    - Takes longer but provides deeper insights
+   - Increases token limit for more complete responses
 7. **Optional**: Enter your holdings manually in the "Manual Holdings" field (one symbol per line)
    - This provides a reliable fallback if automatic portfolio fetching fails
    - Use the exact symbols as they appear in Yahoo Finance
@@ -59,7 +61,7 @@ Download or clone this repository to your local machine.
 ## Usage
 
 1. **Navigate to any financial news website** (Bloomberg, Financial Times, Reuters, etc.)
-2. **Click the extension icon** in your Chrome toolbar
+2. **Click the extension icon** in your Chrome toolbar to open the side panel
 3. **Click "📊 Analyze Page"** button to start analysis
 4. **Wait for analysis** - The extension will:
    - Extract the current page content
@@ -67,6 +69,17 @@ Download or clone this repository to your local machine.
    - Research each company's geographic exposure and business areas
    - Send all data to Gemini AI for comprehensive analysis
    - Display detailed results with company research
+5. **View results in side panel** - The panel stays open while you:
+   - Read the analyzed article
+   - Switch to other tabs
+   - Continue browsing
+   - Click anywhere on the page
+
+### Side Panel Benefits
+- ✨ **Persistent Display**: Results stay visible until you manually close the panel
+- ✨ **Multi-Tab Support**: Panel remains open when switching between tabs
+- ✨ **Resizable**: Adjust the panel width to your preference
+- ✨ **Non-Intrusive**: Doesn't block page content or close accidentally
 
 ### Example Analysis
 
@@ -78,10 +91,14 @@ The extension provides:
 
 ## Supported Models
 
-- **Gemini 1.5 Flash** (Recommended) - Best balance of quality, speed, and reliability
-- **Gemini 1.5 Pro** - High-quality detailed analysis with enhanced reasoning
-- **Gemini 1.5 Flash-8B** - Fastest option for quick analysis
-- **Gemini 2.0 Flash Experimental** - Latest experimental features and capabilities
+The extension dynamically fetches the latest available Gemini models from Google's API. Models are automatically updated and may include:
+- **Gemini 1.5 Flash** - Balanced quality and speed
+- **Gemini 1.5 Pro** - High-quality detailed analysis
+- **Gemini 2.0 Flash / 2.5 Flash** - Latest generation models
+- **Gemini Flash-8B** - Fastest option for quick analysis
+- **Experimental Models** - Cutting-edge features as they're released
+
+Models are cached for 24 hours and automatically refreshed when you enter your API key in settings.
 
 ## New Features
 
@@ -165,6 +182,7 @@ The extension requires:
 - `scripting` - Execute content extraction scripts
 - `cookies` - Access Yahoo Finance portfolio data
 - `tabs` - Tab management for analysis
+- `sidePanel` - Display results in persistent side panel
 - Host permissions for Yahoo Finance and Gemini APIs
 
 ### Modifying the Extension
@@ -175,7 +193,15 @@ The extension requires:
 
 ## Recent Updates
 
-### Version 1.1 - Latest Fixes
+### Version 1.2 - Latest Features
+- ✅ **Side Panel Support**: Results stay open while browsing and switching tabs
+- ✅ **Dynamic Model Loading**: Automatically fetches latest Gemini models from API
+- ✅ **Model Caching**: 24-hour cache for faster loading
+- ✅ **Improved JSON Parsing**: Better handling of Gemini 2.5 Flash responses
+- ✅ **Increased Token Limits**: 4096 tokens (normal), 8192 tokens (thinking mode)
+- ✅ **Truncation Detection**: Warns when responses are incomplete
+
+### Version 1.1 - Previous Fixes
 - ✅ **Fixed Gemini API Integration**: Resolved "Failed to get AI analysis" errors
 - ✅ **Fixed Service Worker**: Resolved "Service worker registration failed" issues
 - ✅ **Updated Model Support**: Using actual available Gemini models

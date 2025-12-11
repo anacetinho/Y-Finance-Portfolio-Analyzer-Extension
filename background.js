@@ -19,6 +19,11 @@ chrome.runtime.onStartup.addListener(() => {
   console.log('Portfolio Impact Analyzer service worker started');
 });
 
+// Open side panel when extension icon is clicked
+chrome.action.onClicked.addListener((tab) => {
+  chrome.sidePanel.open({ tabId: tab.id });
+});
+
 // Handle messages from content scripts or popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('Background received message:', request);

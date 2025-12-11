@@ -453,7 +453,7 @@ Focus on:
       }],
       generationConfig: {
         temperature: enableThinking ? 0.2 : 0.1,
-        maxOutputTokens: enableThinking ? 4096 : 2048
+        maxOutputTokens: enableThinking ? 8192 : 4096
       }
     })
   });
@@ -465,20 +465,109 @@ Focus on:
   }
 
   const data = await response.json();
+  
+  // Check for content filtering or incomplete response
+  if (!data.candidates || data.candidates.length === 0) {
+    console.error('No candidates in response:', data);
+    throw new Error('Gemini API returned no results. The content may have been filtered or the request was invalid.');
+  }
+  
+  const candidate = data.candidates[0];
+  
+  // Check for finish reason indicating incomplete response
+  if (candidate.finishReason === 'MAX_TOKENS' || candidate.finishReason === 'RECITATION') {
+    console.warn('Response was truncated. Finish reason:', candidate.finishReason);
+  }
 
   // Get the response text
-  let text = data.candidates[0].content.parts[0].text;
+  let text = candidate.content.parts[0].text;
+  
+  console.log('Raw Gemini response:', text);
+  console.log('Finish reason:', candidate.finishReason);
 
   // In thinking mode, we'll get a longer, more detailed response
   // but we still parse the JSON the same way
 
-  // Extract JSON from response
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (jsonMatch) {
-    return JSON.parse(jsonMatch[0]);
+  // Try multiple methods to extract JSON from response
+  let jsonText = null;
+  
+  // Method 1: Extract JSON from markdown code blocks (```json ... ```)
+  const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (codeBlockMatch) {
+    const extracted = codeBlockMatch[1].trim();
+    // Check if it starts with { or [ (valid JSON)
+    if (extracted.startsWith('{') || extracted.startsWith('[')) {
+      jsonText = extracted;
+    }
+  }
+  
+  // Method 2: Find complete JSON object by counting braces
+  if (!jsonText) {
+    const firstBrace = text.indexOf('{');
+    if (firstBrace !== -1) {
+      let braceCount = 0;
+      let inString = false;
+      let escapeNext = false;
+      
+      for (let i = firstBrace; i < text.length; i++) {
+        const char = text[i];
+        
+        if (escapeNext) {
+          escapeNext = false;
+          continue;
+        }
+        
+        if (char === '\\') {
+          escapeNext = true;
+          continue;
+        }
+        
+        if (char === '"' && !escapeNext) {
+          inString = !inString;
+          continue;
+        }
+        
+        if (!inString) {
+          if (char === '{') braceCount++;
+          if (char === '}') {
+            braceCount--;
+            if (braceCount === 0) {
+              jsonText = text.substring(firstBrace, i + 1);
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  // Method 3: Try simple regex as last resort
+  if (!jsonText) {
+    const cleanText = text.replace(/```(?:json)?/g, '').trim();
+    const simpleMatch = cleanText.match(/\{[\s\S]*\}/);
+    if (simpleMatch) {
+      jsonText = simpleMatch[0];
+    }
+  }
+  
+  if (jsonText) {
+    try {
+      return JSON.parse(jsonText);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      console.error('Failed to parse:', jsonText);
+      throw new Error('Invalid JSON format in AI response: ' + parseError.message);
+    }
   }
 
-  throw new Error('Invalid AI response format - no JSON found in response');
+  console.error('No JSON found in response:', text);
+  
+  // Check if response seems truncated
+  if (text.includes('```json') && !text.includes('```\n') && !text.endsWith('```')) {
+    throw new Error('AI response was truncated (incomplete JSON). Try enabling "Thinking Mode" in settings or use a shorter article.');
+  }
+  
+  throw new Error('Invalid AI response format - no JSON found in response. Check console for details.');
 }
 
 function displayResults(analysis) {
